@@ -6,7 +6,7 @@ import keras.backend as K
 
 class ModelStruct:
     def __init__(self, batch_shape, embedding_dim, latent_size, vocab_size):
-        # self.__check_inputs(batch_shape, latent_size)  # check inputs are valid
+        self.__check_inputs(batch_shape, embedding_dim, latent_size, vocab_size)  # check inputs are valid
 
         self.batch_shape = batch_shape  # shape of input data
         self.latent_size = latent_size
@@ -72,32 +72,47 @@ class ModelStruct:
     The decoder's .predict() method takes 2 parameters 'decoder input' and
     'initial state' respectively.
 
-    The decoder, when called on .predict() method, returns the mean of code that
-    represents input data.
+    The decoder, when called on .predict() method, returns a probability distribution
+    of the next word over all words in vocabulary.
+
+    In this version, embedding matrix has to be predefined, and it must contain
+    <start> token with its embedding being all zeros.
     '''
     def assemble_decoder_infer(self):
         init_state = Input(shape=(self.latent_size,), name='decoder_initial_state')
-        decode_in = Input(shape=(1, self.input_size), name='decoder_in')
-        decode_states, hidden_state = self.decode_gru(decode_in, initial_state=init_state)
+        decode_in = Input(shape=(1,), dtype='int32', name='decoder_in')
+        embedded = self.embedding_layer(decode_in)
+        decode_states, hidden_state = self.decode_gru(embedded, initial_state=init_state)
         decode_out = TimeDistributed(self.output_dense)(decode_states)
         return Model([decode_in, init_state], [decode_out, hidden_state], name='decoder')
 
     # helper method used to check inputs are valid
     # throws corresponding exceptions when expectations are not met
-    def __check_inputs(self, batch_shape, latent_size):
+    def __check_inputs(self, batch_shape, embedding_dim, latent_size, vocab_size):
         batch_shape_type = type(batch_shape)
         batch_shape_len = len(batch_shape)
+        embedding_dim_type = type(embedding_dim)
         latent_size_type = type(latent_size)
+        vocab_size_type = type(vocab_size)
+
         if batch_shape_type != tuple:
             raise TypeError('expect "batch_shape" to be type tuple, instead got {}'.format(batch_shape_type))
-        elif batch_shape_len != 3:
-            raise ValueError('expect "batch_shape" to have length == 3, instead got {}'.format(batch_shape_len))
+        elif batch_shape_len != 2:
+            raise ValueError('expect "batch_shape" to have length == 2, instead got {}'.format(batch_shape_len))
         elif not all(i > 0 for i in batch_shape):
             raise ValueError('all elements in batch_shape must be greater than 0, instead got {}'.format(batch_shape))
+        elif embedding_dim_type != int:
+            raise TypeError('expect "embedding_dim" to be type int, instead got {}'.format(embedding_dim_type))
+        elif embedding_dim <= 0:
+            raise ValueError('expect "embedding_dim" to be greater than 0, instead got {}'.format(embedding_dim))
         elif latent_size_type != int:
             raise TypeError('expect "latent_size" to be type int, instead got {}'.format(latent_size_type))
         elif latent_size <= 0:
             raise ValueError('expect "latent_size" to be greater than 0, instead got {}'.format(latent_size))
+        elif vocab_size_type != int:
+            raise TypeError('expect "vocab_size" to be type int, instead got {}'.format(vocab_size_type))
+        elif vocab_size <= 0:
+            raise ValueError('expect "vocab_size" to be greater than 0, instead got {}'.format(vocab_size))
 
     # sampling function used by sampling layer
     def __sampling(self, args):
