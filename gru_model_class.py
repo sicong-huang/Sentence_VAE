@@ -59,8 +59,9 @@ class ModelStruct:
     represents input data.
     '''
     def assemble_encoder_infer(self):
-        encode_in = Input(shape=self.non_batch_shape, name='encoder_in')
-        hidden_state = self.encode_gru(encode_in)
+        encode_in = Input(shape=(self.seq_len,), name='encoder_in')
+        embedded = self.embedding_layer(encode_in)
+        hidden_state = self.encode_gru(embedded)
         mean = self.mean_output(hidden_state)
         return Model(encode_in, mean)
 

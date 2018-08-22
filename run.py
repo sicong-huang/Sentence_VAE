@@ -9,10 +9,10 @@ batch_size = 32
 # load data and fit it to batch size
 train = data_utils.load_data('train')
 valid = data_utils.load_data('valid')
-# test = data_utils.load_data('test')
+test = data_utils.load_data('test')
 train = data_utils.fit_batch(train, batch_size)
 valid = data_utils.fit_batch(valid, batch_size)
-# test = data_utils.fit_batch(test, batch_size)
+test = data_utils.fit_batch(test, batch_size)
 
 # define model hyper-parameters
 seq_len = train.shape[1]
@@ -33,8 +33,9 @@ vae = model_struct.assemble_vae_train()
 
 # display compile and fit model
 vae.summary()
-# vae.compile(optimizer='adam')
-# vae.fit(train, batch_size=batch_size, epochs=5, shuffle=True, validation_data=(valid, None))
+vae.compile(optimizer='adam')
+vae.fit(train, batch_size=batch_size, epochs=5, shuffle=True, validation_data=(valid, None))
+vae.evaluate(test, batch_size=batch_size)
 
 # reconstructed = vae.predict(x_test, batch_size=batch_size)
 '''
