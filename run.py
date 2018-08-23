@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from gru_model_class import ModelStruct
 import data_utils
 
-batch_size = 32
+batch_size = 256
 
 # load data and fit it to batch size
 train = data_utils.load_data('train')
@@ -34,7 +34,7 @@ vae = model_struct.assemble_vae_train()
 def accuracy(epoch, logs):
     pred = vae.predict(valid, batch_size=batch_size)
     pred_argmax = np.argmax(pred, axis=-1)
-    correct_count = np.sum(np.equal(y_true, pred_argmax))
+    correct_count = np.sum(np.equal(valid, pred_argmax))
     acc = correct_count / (seq_len * valid.shape[0])
     print('After epoch', epoch, 'accuracy =', acc)
 
@@ -46,16 +46,16 @@ acc_callback = keras.callbacks.LambdaCallback(on_epoch_end=accuracy)
 # display compile and fit model
 vae.summary()
 vae.compile(optimizer='adam', metrics=['sparse_categorical_accuracy'])
-vae.fit(train, batch_size=batch_size, epochs=1, shuffle=True, validation_data=(valid, None))
+vae.fit(train, batch_size=batch_size, epochs=1, shuffle=True, validation_data=(valid, None),\
+        callbacks=[acc_callback])
 
 # pred_after = vae.predict(test)
 # acc_after = accuracy(test, pred_after)
 #
 # print('before acc',acc_before)
 # print('after acc', acc_after)
-loss, acc = vae.evaluate(test, batch_size=batch_size)
+loss = vae.evaluate(test, batch_size=batch_size)
 print('loss', loss)
-print('acc', acc)
 
 # reconstructed = vae.predict(x_test, batch_size=batch_size)
 '''
