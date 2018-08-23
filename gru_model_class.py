@@ -43,13 +43,29 @@ class ModelStruct:
         decode_out = TimeDistributed(self.output_dense)(decode_states)
         vae = Model(encode_in, decode_out, name='VAE')
 
+        vae_loss_fn = self.__vae_loss_helper(encode_in, decode_out, mean, log_std)
+        # accuracy_fn = self.__accuracy_helper(encode_in, decode_out)
+        vae.compile(optimizer='adam', loss=vae_loss_fn, metrics=['sparse_categorical_accuracy'])
+
         # add VAE loss
-        reconstruction_loss = K.mean(K.sum(K.sparse_categorical_crossentropy(encode_in, decode_out), axis=1))
-        kl_loss = -0.5 * K.mean(1 + log_std - K.square(mean) - K.exp(log_std))
-        vae_loss = reconstruction_loss + kl_loss
-        vae.add_loss(vae_loss)
+        # reconstruction_loss = K.mean(K.sum(K.sparse_categorical_crossentropy(encode_in, decode_out), axis=1))
+        # kl_loss = -0.5 * K.mean(1 + log_std - K.square(mean) - K.exp(log_std))
+        # vae_loss = reconstruction_loss + kl_loss
+        # vae.add_loss(vae_loss)
 
         return vae
+
+    def __vae_loss_helper(self, encode_in, decode_out, mean, log_std):
+        def vae_loss(y_true, y_pred):
+            reconstruction_loss = K.mean(K.sum(K.sparse_categorical_crossentropy(encode_in, decode_out), axis=1))
+            kl_loss = -0.5 * K.mean(1 + log_std - K.square(mean) - K.exp(log_std))
+            return reconstruction_loss + kl_loss
+        return vae_loss
+
+    def __accuracy_helper(self, encode_in, decode_out):
+        def accuracy(y_true, y_pred):
+            return keras.metrics.sparse_categorical_accuracy(encode_in, decode_out)
+        return accuracy
 
     '''
     Returns an encoder for inference, the components of this encoder is the same
