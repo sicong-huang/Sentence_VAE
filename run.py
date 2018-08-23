@@ -5,7 +5,7 @@ import keras
 from gru_model_class import ModelStruct
 import data_utils
 
-batch_size = 32
+batch_size = 128
 
 # load data and fit it to batch size
 train = data_utils.load_data('train')
@@ -29,26 +29,17 @@ vae = model_struct.assemble_vae_train()
 # decoder = model_struct.assemble_decoder_infer()
 
 # plot_model(vae, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
-'''
-def accuracy(epoch, logs):
-    pred = vae.predict(valid, batch_size=batch_size)
-    pred_argmax = np.argmax(pred, axis=-1)
-    correct_count = np.sum(np.equal(valid, pred_argmax))
-    acc = correct_count / (seq_len * valid.shape[0])
-    print('After epoch', epoch, 'accuracy =', acc)
-'''
-# pred_before = vae.predict(test)
-# acc_before = accuracy(test, pred_before)
-#####----- 2 problems: accuracy and generation -----######
 
-# acc_callback = keras.callbacks.LambdaCallback(on_epoch_end=accuracy)
+
+#####----- 2 problems: accuracy and generation -----######
 
 # display and fit model
 vae.summary()
-vae.fit(train, train, batch_size=batch_size, epochs=1, shuffle=True, validation_data=(valid, None))
+vae.fit(train, train, batch_size=batch_size, epochs=1, shuffle=True, validation_data=(valid, valid))
 
-loss = vae.evaluate(test, test, batch_size=batch_size)
-print('loss', loss)
+loss, acc = vae.evaluate(test, test, batch_size=batch_size)
+print('evaluation result')
+print('loss =', loss, 'accuracy =', acc)
 
 # reconstructed = vae.predict(x_test, batch_size=batch_size)
 '''

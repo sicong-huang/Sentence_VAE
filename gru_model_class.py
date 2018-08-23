@@ -1,3 +1,4 @@
+import tensorflow as tf
 import keras
 
 from keras.layers import Input, Dense, Lambda, GRU, TimeDistributed, Embedding
@@ -44,8 +45,8 @@ class ModelStruct:
         vae = Model(encode_in, decode_out, name='VAE')
 
         vae_loss_fn = self.__vae_loss_helper(encode_in, decode_out, mean, log_std)
-        # accuracy_fn = self.__accuracy_helper(encode_in, decode_out)
-        vae.compile(optimizer='adam', loss=vae_loss_fn, metrics=['sparse_categorical_accuracy'])
+        accuracy_fn = self.__accuracy_helper(encode_in, decode_out)
+        vae.compile(optimizer='adam', loss=vae_loss_fn, metrics=[accuracy_fn])
 
         # add VAE loss
         # reconstruction_loss = K.mean(K.sum(K.sparse_categorical_crossentropy(encode_in, decode_out), axis=1))
@@ -64,7 +65,9 @@ class ModelStruct:
 
     def __accuracy_helper(self, encode_in, decode_out):
         def accuracy(y_true, y_pred):
-            return keras.metrics.sparse_categorical_accuracy(encode_in, decode_out)
+            pred = tf.argmax(decode_out, axis=-1, output_type=tf.int32)
+            correct_count = tf.count_nonzero(tf.equal(pred, encode_in), axis=-1, dtype=tf.float32)
+            return tf.div(correct_count, self.seq_len)
         return accuracy
 
     '''
