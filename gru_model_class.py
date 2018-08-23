@@ -56,6 +56,7 @@ class ModelStruct:
 
         return vae
 
+    # a helper function that returns a loss function used to compute gradient
     def __vae_loss_helper(self, encode_in, decode_out, mean, log_std):
         def vae_loss(y_true, y_pred):
             reconstruction_loss = K.mean(K.sum(K.sparse_categorical_crossentropy(encode_in, decode_out), axis=1))
@@ -63,6 +64,7 @@ class ModelStruct:
             return reconstruction_loss + kl_loss
         return vae_loss
 
+    # a helper function that returns a metric function to monitor accuracy
     def __accuracy_helper(self, encode_in, decode_out):
         def accuracy(y_true, y_pred):
             pred = tf.argmax(decode_out, axis=-1, output_type=tf.int32)
