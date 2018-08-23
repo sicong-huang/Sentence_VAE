@@ -1,6 +1,6 @@
 import numpy as np
 import keras
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # from keras.utils.vis_utils import plot_model
 from gru_model_class import ModelStruct
 import data_utils
