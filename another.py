@@ -3,10 +3,11 @@ import keras
 from keras import backend as K
 from keras.layers import Input, Lambda
 from keras.models import Model
+from keras.metrics import sparse_categorical_accuracy
 
-def cross_en(args):
+def acc(args):
     tar, dis = args
-    return K.sparse_categorical_crossentropy(tar, dis)
+    return sparse_categorical_accuracy(tar, dis)
 
 distro = Input(shape=(3, 2), dtype='float32')
 target = Input(shape=(3,), dtype='int32')

@@ -86,6 +86,11 @@ class ModelStruct:
         decode_out = TimeDistributed(self.output_dense)(decode_states)
         return Model([decode_in, init_state], [decode_out, hidden_state], name='decoder')
 
+    def accuracy(self, y_true, y_pred):
+        pred_argmax = K.argmax(y_pred, axis=-1)
+        correct_count = K.sum(K.equal(y_true, pred_argmax))
+        return correct_count / (self.seq_len * self.batch_size)
+
     # helper method used to check inputs are valid
     # throws corresponding exceptions when expectations are not met
     def __check_inputs(self, batch_shape, embedding_dim, latent_size, vocab_size):

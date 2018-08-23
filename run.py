@@ -1,4 +1,5 @@
 import numpy as np
+import keras
 import matplotlib.pyplot as plt
 # from keras.utils.vis_utils import plot_model
 from gru_model_class import ModelStruct
@@ -19,7 +20,7 @@ seq_len = train.shape[1]
 embedding_dim = 128
 latent_size = 64
 batch_shape = (batch_size, seq_len)
-vocab_size = np.max(train) + 1
+vocab_size = int(np.max(train) + 1)
 
 # construct models
 model_struct = ModelStruct(batch_shape, embedding_dim, latent_size, vocab_size)
@@ -30,12 +31,31 @@ vae = model_struct.assemble_vae_train()
 # plot_model(vae, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 # print('done plotting')
 
+def accuracy(epoch, logs):
+    pred = vae.predict(valid, batch_size=batch_size)
+    pred_argmax = np.argmax(pred, axis=-1)
+    correct_count = np.sum(np.equal(y_true, pred_argmax))
+    acc = correct_count / (seq_len * valid.shape[0])
+    print('After epoch', epoch, 'accuracy =', acc)
 
+# pred_before = vae.predict(test)
+# acc_before = accuracy(test, pred_before)
+#####----- 2 problems: accuracy and generation -----######
+
+acc_callback = keras.callbacks.LambdaCallback(on_epoch_end=accuracy)
 # display compile and fit model
 vae.summary()
-vae.compile(optimizer='adam')
-vae.fit(train, batch_size=batch_size, epochs=5, shuffle=True, validation_data=(valid, None))
-vae.evaluate(test, batch_size=batch_size)
+vae.compile(optimizer='adam', metrics=['sparse_categorical_accuracy'])
+vae.fit(train, batch_size=batch_size, epochs=1, shuffle=True, validation_data=(valid, None))
+
+# pred_after = vae.predict(test)
+# acc_after = accuracy(test, pred_after)
+#
+# print('before acc',acc_before)
+# print('after acc', acc_after)
+loss, acc = vae.evaluate(test, batch_size=batch_size)
+print('loss', loss)
+print('acc', acc)
 
 # reconstructed = vae.predict(x_test, batch_size=batch_size)
 '''
