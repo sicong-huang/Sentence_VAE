@@ -1,7 +1,6 @@
 import numpy as np
-import keras
 # import matplotlib.pyplot as plt
-# from keras.utils.vis_utils import plot_model
+from keras.utils.vis_utils import plot_model
 from gru_model_class import ModelStruct
 import data_utils
 
@@ -21,6 +20,7 @@ embedding_dim = 128
 latent_size = 64
 batch_shape = (batch_size, seq_len)
 vocab_size = int(np.max(train) + 1)
+plot = False
 
 # construct models
 model_struct = ModelStruct(batch_shape, embedding_dim, latent_size, vocab_size)
@@ -28,8 +28,10 @@ vae = model_struct.assemble_vae_train()
 # encoder = model_struct.assemble_encoder_infer()
 # decoder = model_struct.assemble_decoder_infer()
 
-# plot_model(vae, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
-
+if plot:
+    plot_model(vae, to_file='vae.png', show_shapes=True, show_layer_names=True)
+    # plot_model(encoder, to_file='encoder.png', show_shapes=True, show_layer_names=True)
+    # plot_model(decoder, to_file='decoder.png', show_shapes=True, show_layer_names=True)
 
 #####----- 2 problems: accuracy and generation -----######
 
