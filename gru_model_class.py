@@ -6,17 +6,18 @@ from keras.models import Model
 import keras.backend as K
 
 class ModelStruct:
-    def __init__(self, batch_shape, embedding_dim, latent_size, vocab_size):
-        self.__check_inputs(batch_shape, embedding_dim, latent_size, vocab_size)  # check inputs are valid
+    def __init__(self, batch_shape, embedding_matrix, latent_size):
+        # self.__check_inputs(batch_shape, embedding_dim, latent_size, vocab_size)  # check inputs are valid
 
         self.batch_shape = batch_shape  # shape of input data
         self.latent_size = latent_size
-        self.embedding_dim = embedding_dim
+        vocab_size, self.embedding_dim = embedding_matrix.shape
         self.batch_size, self.seq_len = batch_shape
-        self.embedded_shape = (self.batch_size, self.seq_len, embedding_dim)  # shape of embedded data
+        self.embedded_shape = (self.batch_size, self.seq_len, self.embedding_dim)  # shape of embedded data
 
         ### embedding layer ###
-        self.embedding_layer = Embedding(vocab_size, embedding_dim, input_length=self.seq_len)
+        self.embedding_layer = Embedding(vocab_size, self.embedding_dim,\
+                weights=[embedding_matrix], input_length=self.seq_len, trainable=False)
 
         ### encoder components ###
         self.encode_gru = GRU(self.latent_size, name='encoder_gru')

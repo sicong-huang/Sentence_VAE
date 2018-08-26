@@ -7,45 +7,46 @@ import data_utils
 batch_size = 128
 
 # load data and fit it to batch size
-train = data_utils.load_data('train')
-valid = data_utils.load_data('valid')
-test = data_utils.load_data('test')
+train = data_utils.load_data('train.npz', 'index', np.int32)
+valid = data_utils.load_data('valid.npz', 'index', np.int32)
+test = data_utils.load_data('test.npz', 'index', np.int32)
 train = data_utils.fit_batch(train, batch_size)
 valid = data_utils.fit_batch(valid, batch_size)
 test = data_utils.fit_batch(test, batch_size)
 
 # define model hyper-parameters
 seq_len = train.shape[1]
-embedding_dim = 128
+embedding_matrix = data_utils.load_data('trimmed_glove.npz', 'embeddings', np.float32)
 latent_size = 64
 batch_shape = (batch_size, seq_len)
-vocab_size = int(np.max(train) + 1)
 plot = False
 
 # construct models
-model_struct = ModelStruct(batch_shape, embedding_dim, latent_size, vocab_size)
+model_struct = ModelStruct(batch_shape, embedding_matrix, latent_size)
 vae = model_struct.assemble_vae_train()
-# encoder = model_struct.assemble_encoder_infer()
-# decoder = model_struct.assemble_decoder_infer()
+encoder = model_struct.assemble_encoder_infer()
+decoder = model_struct.assemble_decoder_infer()
 
 if plot:
     plot_model(vae, to_file='vae.png', show_shapes=True, show_layer_names=True)
-    # plot_model(encoder, to_file='encoder.png', show_shapes=True, show_layer_names=True)
-    # plot_model(decoder, to_file='decoder.png', show_shapes=True, show_layer_names=True)
+    plot_model(encoder, to_file='encoder.png', show_shapes=True, show_layer_names=True)
+    plot_model(decoder, to_file='decoder.png', show_shapes=True, show_layer_names=True)
 
 #####----- 2 problems: accuracy and generation -----######
 
 # display and fit model
 vae.summary()
-vae.fit(train, train, batch_size=batch_size, epochs=1, shuffle=True, validation_data=(valid, valid))
-
+encoder.summary()
+decoder.summary()
+# vae.fit(train, train, batch_size=batch_size, epochs=1, shuffle=True, validation_data=(valid, valid))
+#
 loss, acc = vae.evaluate(test, test, batch_size=batch_size)
 print('evaluation result')
 print('loss =', loss, 'accuracy =', acc)
 
 # reconstructed = vae.predict(x_test, batch_size=batch_size)
 '''
-state = encoder.predict(x_test[0].reshape(1, 28, 28))
+state = encoder.predict(test[0].reshape(1, ))
 out = np.zeros((1, 1, 28), dtype=np.float32)  # initial "start" vector
 predicted = []
 for _ in range(28):
