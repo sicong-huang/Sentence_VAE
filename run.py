@@ -23,7 +23,7 @@ plot = False
 
 # construct models
 model_struct = ModelStruct(batch_shape, embedding_matrix, latent_size)
-vae = model_struct.assemble_vae_train()
+# vae = model_struct.assemble_vae_train()
 encoder = model_struct.assemble_encoder_infer()
 decoder = model_struct.assemble_decoder_infer()
 
@@ -35,36 +35,48 @@ if plot:
 #####----- 2 problems: accuracy and generation -----######
 
 # display and fit model
-vae.summary()
-encoder.summary()
-decoder.summary()
+# vae.summary()
+# encoder.summary()
+# decoder.summary()
 # vae.fit(train, train, batch_size=batch_size, epochs=1, shuffle=True, validation_data=(valid, valid))
+
+# loss, acc = vae.evaluate(test, test, batch_size=batch_size)
+# print('evaluation result')
+# print('loss =', loss, 'accuracy =', acc)
+
+# reconstructed = vae.predict(test[:batch_size], batch_size=batch_size)
+# predicted = np.argmax(reconstructed, axis=-1)
+# print('shape of predicted:', predicted.shape)
+# print(predicted)
+# print('test.shape', test.shape)
+state = encoder.predict(test[0].reshape(1, -1))
+out = np.array(1).reshape(1, -1)  # initial "start" token
+# predicted = []
+# for _ in range(seq_len):
+out, state = decoder.predict([out, state])
+print('out.shape', out.shape)
+print('state.shape', state.shape)
+out = np.argmax(out, axis=-1)
+print('after argmax, out.shape', out.shape)
+
+#     predicted.append(out.reshape(-1,))
+# predicted = np.array(predicted)
+# print('test[0]')
+# print(test[0])
+# print('predicted')
+# print(predicted)
+
+# fig = plt.figure()
+# ax1 = fig.add_subplot(1, 2, 1)
+# ax1.imshow(x_test[0], cmap='gray')
+# ax1.set_axis_off()
 #
-loss, acc = vae.evaluate(test, test, batch_size=batch_size)
-print('evaluation result')
-print('loss =', loss, 'accuracy =', acc)
+# ax2 = fig.add_subplot(1, 2, 2)
+# ax2.imshow(predicted, cmap='gray')
+# ax2.set_axis_off()
+#
+# plt.show()
 
-# reconstructed = vae.predict(x_test, batch_size=batch_size)
-'''
-state = encoder.predict(test[0].reshape(1, ))
-out = np.zeros((1, 1, 28), dtype=np.float32)  # initial "start" vector
-predicted = []
-for _ in range(28):
-    out, state = decoder.predict([out, state])
-    predicted.append(out.reshape(-1,))
-predicted = np.stack(predicted, axis=0)
-
-fig = plt.figure()
-ax1 = fig.add_subplot(1, 2, 1)
-ax1.imshow(x_test[0], cmap='gray')
-ax1.set_axis_off()
-
-ax2 = fig.add_subplot(1, 2, 2)
-ax2.imshow(predicted, cmap='gray')
-ax2.set_axis_off()
-
-plt.show()
-'''
 # show results
 # n = 5
 

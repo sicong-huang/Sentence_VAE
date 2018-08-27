@@ -30,7 +30,7 @@ class ModelStruct:
         ### decoder components ###
         self.convert_layer = Lambda(self.__convert, name='convert_layer')
         self.decode_gru = GRU(self.latent_size, return_sequences=True, return_state=True, name='decoder_gru')
-        self.output_dense = Dense(vocab_size, activation='softmax', name='decoder_output')
+        self.output_dense = Dense(vocab_size, input_shape=(self.latent_size,), activation='softmax', name='decoder_output')
 
     # return an end-to-end VAE for training
     def assemble_vae_train(self):
@@ -105,6 +105,7 @@ class ModelStruct:
         decode_in = Input(shape=(1,), dtype='int32', name='decoder_in')
         embedded = self.embedding_layer(decode_in)
         decode_states, hidden_state = self.decode_gru(embedded, initial_state=init_state)
+        # decode_out = Reshape()
         decode_out = TimeDistributed(self.output_dense)(decode_states)
         return Model([decode_in, init_state], [decode_out, hidden_state], name='decoder')
 
