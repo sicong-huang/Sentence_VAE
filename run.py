@@ -1,6 +1,8 @@
 import numpy as np
-# import matplotlib.pyplot as plt
+import nltk
+from nltk.tokenize.treebank import TreebankWordDetokenizer
 from keras.utils.vis_utils import plot_model
+
 from gru_model_class import ModelStruct
 import data_utils
 
@@ -15,9 +17,9 @@ def load_all_data(batch_size):
     return train, valid, test
 
 def plot_models(vae, encoder, decoder):
-    plot_model(vae, to_file='vae.png', show_shapes=True, show_layer_names=True)
-    plot_model(encoder, to_file='encoder.png', show_shapes=True, show_layer_names=True)
-    plot_model(decoder, to_file='decoder.png', show_shapes=True, show_layer_names=True)
+    plot_model(vae, to_file='images/vae.png', show_shapes=True, show_layer_names=True)
+    plot_model(encoder, to_file='images/encoder.png', show_shapes=True, show_layer_names=True)
+    plot_model(decoder, to_file='images/decoder.png', show_shapes=True, show_layer_names=True)
 
 def summarize_models(vae, encoder, decoder):
     print('end-to-end VAE')
@@ -28,15 +30,14 @@ def summarize_models(vae, encoder, decoder):
     decoder.summary()
 
 # encode a sentence string to latent representation
-def encode(sentence, encoder, word2idx):
-    state = encoder.predict(test[0].reshape(1, -1))
-    out = np.array(1).reshape(1, -1)  # initial "<start>" token
-    predicted = []
-    for _ in range(seq_len):
-        out, state = decoder.predict([out, state])
-        out = np.argmax(out, axis=-1)
-        predicted.append(np.asscalar(out))
-    predicted = np.array(predicted)
+def encode(sentence, encoder, word2idx, seq_len):
+    tokens = nltk.tokenize.word_tokenize(sentence).append('eos')
+    sequence = [word2idx[word] for word in tokens]
+    if len(sequence) < seq_len:
+        sequence = sequence + [word2idx['<pad>']] * (seq_len - len(sequence))
+    elif len(sequence) > seq_len:
+        sequence = sequence[:seq_len]
+    return encoder.predict(np.array([sequence]))
 
 if __name__ == '__main__':
     batch_size = 128
@@ -85,8 +86,12 @@ if __name__ == '__main__':
         predicted.append(np.asscalar(out))
     predicted = np.array(predicted)
 
-    orig_sent = [idx2word[i] for i in test_sent]
-    generated_sent = [idx2word[i] for i in predicted]
+    # print results
+    detok = TreebankWordDetokenizer()
+    orig_sent = [idx2word[index] for index in test_sent]
+    generated_sent = [idx2word[index] for index in predicted]
+    orig_sent = detok.detokenize(orig_sent)
+    generated_sent = detok.detokenize(generated_sent)
     print('original test sentence:')
     print(orig_sent)
     print('generated sentence:')
