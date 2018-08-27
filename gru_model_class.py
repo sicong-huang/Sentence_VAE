@@ -17,7 +17,7 @@ class ModelStruct:
 
         ### embedding layer ###
         self.embedding_layer = Embedding(vocab_size, self.embedding_dim,\
-                weights=[embedding_matrix], input_length=self.seq_len, trainable=False)
+                weights=[embedding_matrix], trainable=False)
 
         ### encoder components ###
         self.encode_gru = GRU(self.latent_size, name='encoder_gru')
@@ -30,7 +30,8 @@ class ModelStruct:
         ### decoder components ###
         self.convert_layer = Lambda(self.__convert, name='convert_layer')
         self.decode_gru = GRU(self.latent_size, return_sequences=True, return_state=True, name='decoder_gru')
-        self.output_dense = Dense(vocab_size, input_shape=(self.latent_size,), activation='softmax', name='decoder_output')
+        self.output_dense = Dense(vocab_size, input_shape=(self.latent_size,),\
+                activation='softmax', name='decoder_output')
 
     # return an end-to-end VAE for training
     def assemble_vae_train(self):
