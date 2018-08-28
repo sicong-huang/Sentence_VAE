@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # generate
     eos_idx = word2idx['eos']
     detok = TreebankWordDetokenizer()
-    with open('test_sentences.txt', 'r') as f:
+    with open('sentences.txt', 'r') as f:
         for sent in f:
             orig_sent = sent.strip('\n')
             code = encode(orig_sent, encoder, word2idx, seq_len)
