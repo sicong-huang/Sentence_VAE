@@ -1,5 +1,6 @@
 import numpy as np
 import nltk
+import keras
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 
 import data_utils
