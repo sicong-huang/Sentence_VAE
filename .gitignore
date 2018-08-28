@@ -1,3 +1,4 @@
 __pycache__/
 .DS_store
 another.py
+.test.py.swp

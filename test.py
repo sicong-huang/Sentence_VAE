@@ -7,7 +7,8 @@ import data_utils
 
 # encode a sentence string to latent representation
 def encode(sentence, encoder, word2idx, seq_len):
-    tokens = nltk.tokenize.word_tokenize(sentence).append('eos')
+    tokens = nltk.word_tokenize(sentence)
+    tokens.append('eos')
     sequence = []
     for word in tokens:
         try:
