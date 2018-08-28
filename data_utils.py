@@ -13,7 +13,11 @@ def fit_batch(data, batch):
     remainder = data_points % batch
     return data[:data_points - remainder]
 
-def load_object(file):
-    with open('data/' + file, 'rb') as f:
+def save_object(obj, path):
+    with open(path, 'wb') as f:
+        pickle.dump(obj, f)
+
+def load_object(path):
+    with open(path, 'rb') as f:
         obj = pickle.load(f)
     return obj

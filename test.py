@@ -1,39 +1,60 @@
 import numpy as np
-from gru_model_class import ModelStruct
+import nltk
+from nltk.tokenize.treebank import TreebankWordDetokenizer
+
 import data_utils
-'''
-train = data_utils.load_data('train')
-valid = data_utils.load_data('valid')
-test = data_utils.load_data('test')
 
-print('train shape:', train.shape)
-print('valid shape:', valid.shape)
-print('test shape:', test.shape)
+# encode a sentence string to latent representation
+def encode(sentence, encoder, word2idx, seq_len):
+    tokens = nltk.tokenize.word_tokenize(sentence).append('eos')
+    sequence = []
+    for word in tokens:
+        try:
+            sequence.append(word2idx[word])
+        except KeyError:
+            sequence.append(word2idx['unk'])
+    if len(sequence) < seq_len:
+        sequence = sequence + [word2idx['<pad>']] * (seq_len - len(sequence))
+    elif len(sequence) > seq_len:
+        sequence = sequence[:seq_len]
+    return encoder.predict(np.array([sequence]))
 
-print('train max', np.max(train))
-print('valid max', np.max(valid))
-print('test max', np.max(test))
+# decode a code into string sentence
+def decode(code, decoder, idx2word, seq_len, eos_idx, detok):
+    out = np.array(1).reshape(1, -1)  # initial "<start>" token
+    state = code
+    predicted = []
+    for _ in range(seq_len):
+        out, state = decoder.predict([out, state])
+        out = np.asscalar(np.argmax(out, axis=-1))
+        if out == eos_idx:
+            break
+        predicted.append(out)
+    predicted = [idx2word[index] for index in predicted]
+    return detok.detokenize(generated_sent)
 
-print('train type', train.dtype)
-print('valid type', valid.dtype)
-print('test type', test.dtype)
-'''
+if __name__ == '__main__':
+    seq_len = 32
 
-batch_size = 64
-seq_len = 32
-embedding_dim = 100
-latent_size = 64
-vocab_size = 1000
-batch_shape = (batch_size, seq_len)
+    # load pretrained encoder and decoder
+    encoder = keras.models.load_model('saved_models/encoder.h5')
+    print('encoder loaded from: saved_models/encoder.h5')
+    decoder = keras.models.load_model('saved_models/decoder.h5')
+    print('decoder loaded from: saved_models/decoder.h5')
 
-# data = np.random.rand(batch_size, seq_len, input_size)
+    ####---- generation ----####
+    # load word2idx and idx2word
+    idx2word = data_utils.load_object('data/index2word.pkl')
+    word2idx = data_utils.load_object('data/word2index.pkl')
 
-ms = ModelStruct(batch_shape, embedding_dim, latent_size, vocab_size)
-vae = ms.assemble_vae_train()
-vae.summary()
-encoder = ms.assemble_encoder_infer()
-encoder.summary()
-decoder = ms.assemble_decoder_infer()
-decoder.summary()
-# output = encoder.predict(data, batch_size=batch_size)
-# print(output)
+    # generate
+    eos_idx = word2idx['eos']
+    detok = TreebankWordDetokenizer()
+    with open('test_sentences.txt', 'r') as f:
+        for sent in f:
+            orig_sent = sent.strip('\n')
+            code = encode(orig_sent, encoder, word2idx, seq_len)
+            dec_sent = decode(code, decoder, idx2word, seq_len + 10, eos_idx, detok)
+            print(orig_sent)
+            print(dec_sent)
+            print()
