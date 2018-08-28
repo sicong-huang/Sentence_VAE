@@ -28,12 +28,12 @@ def decode(code, decoder, idx2word, seq_len, eos_idx, detok):
     predicted = []
     for _ in range(seq_len):
         out, state = decoder.predict([out, state])
-        out = np.asscalar(np.argmax(out, axis=-1))
-        if out == eos_idx:
+        out = np.argmax(out, axis=-1)
+        if eos_idx == np.asscalar(out):
             break
-        predicted.append(out)
+        predicted.append(np.asscalar(out))
     predicted = [idx2word[index] for index in predicted]
-    return detok.detokenize(generated_sent)
+    return detok.detokenize(predicted)
 
 if __name__ == '__main__':
     seq_len = 32
