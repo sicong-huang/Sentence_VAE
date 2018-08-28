@@ -70,8 +70,8 @@ if __name__ == '__main__':
     print('loss =', loss, 'accuracy =', acc)
 
     # save
-    data_utils.save_object(model_struct, 'saved_models/model_struct.pkl')
-    print('model_struct saved at: saved_models/model_struct.pkl')
+    # data_utils.save_object(model_struct, 'saved_models/model_struct.pkl')
+    # print('model_struct saved at: saved_models/model_struct.pkl')
     encoder.save('saved_models/encoder.h5')
     print('encoder saved at: saved_models/encoder.h5')
     decoder.save('saved_models/decoder.h5')
