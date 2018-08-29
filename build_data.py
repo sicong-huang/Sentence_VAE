@@ -1,6 +1,6 @@
 import argparse
-from config import Config
-from data_utils import file_check, dim_check, get_datasets_1, get_datasets, seq_len, get_train_vocab, get_glove_vocab, word2index, index2word, write_vocab,glove_embedding, get_trimmed_datasets
+from corpus.config import Config
+from corpus.data_utils import file_check, dim_check, get_datasets_1, get_datasets, seq_len, get_train_vocab, get_glove_vocab, word2index, index2word, write_vocab,glove_embedding, get_trimmed_datasets
 
 
 def main():
@@ -26,10 +26,6 @@ def main():
             else:
                 a = name[i] + '=' + '\'' + args.filename[i] + '\''
                 exec(a)
-    print(config.filename_train)
-    print(config.filename_valid)
-    print(config.filename_test)
-    print(config.filename_glove)
     file_check([config.filename_train, config.filename_valid, config.filename_test, config.filename_glove])
 
     # Generators
