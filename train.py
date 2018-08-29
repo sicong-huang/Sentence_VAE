@@ -18,7 +18,7 @@ def parse():
                         help='plot models')
     parser.add_argument('--summary', '-s', action='store_true',
                         help='display model summary')
-    parse.add_argument('--history', '-h', action='store_true',
+    parser.add_argument('--history', '-h', action='store_true',
                         help='plot training history')
     return parser.parse_args()
 

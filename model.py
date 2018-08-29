@@ -60,8 +60,8 @@ class ModelStruct:
     # a helper function that returns a loss function used to compute gradient
     def __vae_loss_helper(self, encode_in, decode_out, mean, log_std):
         def vae_loss(y_true, y_pred):
-            reconstruction_loss = K.sum(K.sparse_categorical_crossentropy(encode_in, decode_out), axis=1)
-            kl_loss = -0.5 * (1 + log_std - K.square(mean) - K.exp(log_std))
+            reconstruction_loss = K.mean(K.sum(K.sparse_categorical_crossentropy(encode_in, decode_out), axis=1))
+            kl_loss = -0.5 * K.mean(1 + log_std - K.square(mean) - K.exp(log_std))
             return reconstruction_loss + kl_loss
         return vae_loss
 
