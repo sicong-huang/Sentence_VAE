@@ -10,15 +10,15 @@ class Config():
     dim_word = 300
 
     # glove files
-    filename_glove = "data/glove.6B/glove.6B.{}d.txt".format(dim_word)
+    filename_glove = "embedding/glove.6B/glove.6B.{}d.txt".format(dim_word)
 
     # trimmed glove file
     filename_trimmed_glove = 'data/trimmed_glove.npz'
 
     # dataset
-    filename_train = 'data/train'
-    filename_valid = 'data/valid'
-    filename_test = 'data/test'
+    filename_train = 'raw_data/train'
+    filename_valid = 'raw_data/valid'
+    filename_test = 'raw_data/test'
 
     # trimmed data
     filename_trimmed_train = 'data/train.npz'
