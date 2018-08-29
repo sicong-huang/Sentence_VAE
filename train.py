@@ -1,6 +1,7 @@
 import numpy as np
 import argparse
 from keras.utils.vis_utils import plot_model
+import matplotlib.pyplot as plt
 
 import model
 import data_utils
@@ -45,7 +46,25 @@ def summarize_models(vae, encoder, decoder):
     decoder.summary()
 
 def plot_history(history):
-    pass
+    history['epochs'] = [i for i in range(1, len(history['loss']) + 1)]  # add epoch indexing
+
+    fig = plt.figure(figsize=(10, 4))
+    loss_ax = fig.add_subplot(1, 2, 1)
+    loss_ax.plot('epochs', 'loss', data=history)
+    loss_ax.plot('epochs', 'val_loss', data=history)
+    loss_ax.set_xlabel('epoch')
+    loss_ax.set_ylabel('loss')
+    loss_ax.set_title('Loss')
+    loss_ax.legend(['train', 'validation'])
+
+    acc_ax = fig.add_subplot(1, 2, 2)
+    acc_ax.plot('epochs', 'accuracy', data=history)
+    acc_ax.plot('epochs', 'val_accuracy', data=history)
+    acc_ax.set_xlabel('epoch')
+    acc_ax.set_ylabel('loss')
+    acc_ax.set_title('Accuracy')
+    acc_ax.legend(['train', 'validation'])
+    fig.savefig('images/train_hist.png')
 
 if __name__ == '__main__':
     args = parse()
