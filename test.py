@@ -37,6 +37,11 @@ def decode(code, decoder, idx2word, seq_len, eos_idx, detok):
     predicted = [idx2word[index] for index in predicted]
     return detok.detokenize(predicted)
 
+# a np.linspace function on vectors
+def linspace(start, end, N):
+    step = (end - start) / (N - 1)
+    return step * np.arange(N)[:, None] + start
+
 if __name__ == '__main__':
     seq_len = 32
 
@@ -62,3 +67,12 @@ if __name__ == '__main__':
             print(orig_sent)
             print(dec_sent)
             print()
+
+    print('interpolation:')
+    start_sent = 'i want to be like this man'
+    end_sent = 'there is no way that you can make it'
+    start_code = encode(start_sent, encoder, word2idx, seq_len).reshape(-1)
+    end_code = encode(end_sent, encoder, word2idx, seq_len).reshape(-1)
+    all_codes = linspace(start_code, end_code, 10)
+    for cod in all_codes:
+        print(decode(cod.reshape(1, -1), decoder, idx2word, seq_len, eos_idx, detok))
