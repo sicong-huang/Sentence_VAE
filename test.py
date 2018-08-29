@@ -6,6 +6,8 @@ from nltk.tokenize.treebank import TreebankWordDetokenizer
 import data_utils
 
 # encode a sentence string to latent representation
+
+####==== proprocess input sentences the same way =====####
 def encode(sentence, encoder, word2idx, seq_len):
     tokens = nltk.word_tokenize(sentence)
     tokens.append('eos')
