@@ -17,6 +17,8 @@ def parse():
                         help='plot models')
     parser.add_argument('--summary', '-s', action='store_true',
                         help='display model summary')
+    parse.add_argument('--history', '-h', action='store_true',
+                        help='plot training history')
     return parser.parse_args()
 
 # load data and fit it to batch size
@@ -42,6 +44,8 @@ def summarize_models(vae, encoder, decoder):
     print('decoder')
     decoder.summary()
 
+def plot_history(history):
+    pass
 
 if __name__ == '__main__':
     args = parse()
@@ -64,14 +68,16 @@ if __name__ == '__main__':
         summarize_models(vae, encoder, decoder)
 
     # train
-    vae.fit(train, train, batch_size=args.batch, epochs=args.epochs, shuffle=True, validation_data=(valid, valid))
+    hist = vae.fit(train, train, batch_size=args.batch, epochs=args.epochs,
+                   shuffle=True, validation_data=(valid, valid))
     loss, acc = vae.evaluate(test, test, batch_size=args.batch)
     print('evaluation result')
     print('loss =', loss, 'accuracy =', acc)
 
+    if args.history:  # plot training history if needed
+        plot_history(hist.history)
+
     # save
-    # data_utils.save_object(model_struct, 'saved_models/model_struct.pkl')
-    # print('model_struct saved at: saved_models/model_struct.pkl')
     encoder.save('saved_models/encoder.h5')
     print('encoder saved at: saved_models/encoder.h5')
     decoder.save('saved_models/decoder.h5')

@@ -60,8 +60,8 @@ class ModelStruct:
     # a helper function that returns a loss function used to compute gradient
     def __vae_loss_helper(self, encode_in, decode_out, mean, log_std):
         def vae_loss(y_true, y_pred):
-            reconstruction_loss = K.mean(K.sum(K.sparse_categorical_crossentropy(encode_in, decode_out), axis=1))
-            kl_loss = -0.5 * K.mean(1 + log_std - K.square(mean) - K.exp(log_std))
+            reconstruction_loss = K.sum(K.sparse_categorical_crossentropy(encode_in, decode_out), axis=1)
+            kl_loss = -0.5 * (1 + log_std - K.square(mean) - K.exp(log_std))
             return reconstruction_loss + kl_loss
         return vae_loss
 
@@ -108,11 +108,6 @@ class ModelStruct:
         # decode_out = Reshape()
         decode_out = TimeDistributed(self.output_dense)(decode_states)
         return Model([decode_in, init_state], [decode_out, hidden_state], name='decoder')
-
-    def accuracy(self, y_true, y_pred):
-        pred_argmax = K.argmax(y_pred, axis=-1)
-        correct_count = K.sum(K.equal(y_true, pred_argmax))
-        return correct_count / (self.seq_len * self.batch_size)
 
     # helper method used to check inputs are valid
     # throws corresponding exceptions when expectations are not met
