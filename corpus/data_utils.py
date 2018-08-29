@@ -20,8 +20,7 @@ def dim_check(filename, dim_word):
             raise ValueError('dimension of input file "filename" must agree with dim_word. Found filename dimension to be {} and \
                              dim_word to be {}'.format(num - 1, dim_word))
 
-
-def get_datasets_1(filename, lowercase):
+'''def get_datasets_1(filename, lowercase):
     datasets = []
     with open(filename, 'r', encoding='utf-8') as f:
         text = f.read()
@@ -31,17 +30,33 @@ def get_datasets_1(filename, lowercase):
         for sent in sents:
             words = nltk.word_tokenize(sent)
             datasets.append(words)
+    return datasets'''
+
+def get_datasets(filename, lowercase):
+    datasets = []
+    with open(filename, 'r', encoding='utf-8') as f:
+        for line in f:
+            if lowercase:
+                line = line.lower()
+            line = line.strip().split(' ')
+            if line[0] == '=' or line[0] == '':
+                continue
+            else:
+                for word in line:
+                    flag = word.find('@')
+                    if flag != -1:
+                        line.pop(line.index(word))
+            datasets.append(line)
     return datasets
 
-
-def get_datasets(filename):
+'''def get_datasets_ptb(filename):
     datasets = []
     with open(filename, encoding='utf-8') as f:
         for line in f:
             line = line.strip('\n')
             line = line.strip(' ').split(' ')
             datasets.append(line)
-    return datasets
+    return datasets'''
 
 
 def seq_len(datasets):

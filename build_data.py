@@ -1,6 +1,6 @@
 import argparse
 from corpus.config import Config
-from corpus.data_utils import file_check, dim_check, get_datasets_1, get_datasets, seq_len, get_train_vocab, get_glove_vocab, word2index, index2word, write_vocab,glove_embedding, get_trimmed_datasets
+from corpus.data_utils import file_check, dim_check, get_datasets, seq_len, get_train_vocab, get_glove_vocab, word2index, index2word, write_vocab,glove_embedding, get_trimmed_datasets
 
 
 def main():
@@ -11,15 +11,21 @@ def main():
 
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--processed', '-p', action='store_true', help='files are processed')
+    parser.add_argument('--processed', '-p', type=str, help='ptb or wiki')
     parser.add_argument('--filename', '-f', metavar='filename', type=str, nargs='+',
                         help='filenames must be given in order [filename_train, filename_valid, filename_test, filename_glove]\
                              (default:*), if only a few files are to be given, default ones must be replaced by "*"')
     parser.add_argument('--max_length', '-m', metavar='NUM', type=int, help='display max_length')
     parser.add_argument('--dim_word', '-d', metavar='NUM', type=int, help='display dim_word')
     args = parser.parse_args()
-    if args.processed:
-        config.flag_text = args.processed
+    if args.processed == 'ptb':
+        config.filename_train = 'raw_data/ptb/train'
+        config.filename_valid = 'raw_data/ptb/valid'
+        config.filename_test = 'raw_data/ptb/test'
+    if args.processed == 'wiki':
+        config.filename_train = 'raw_data/wikitext-2/wiki.train.tokens'
+        config.filename_valid = 'raw_data/wikitext-2/wiki.valid.tokens'
+        config.filename_test = 'raw_data/wikitext-2/wiki.test.tokens'
     if args.filename:
         name = ['config.filename_train', 'config.filename_valid', 'config.filename_test', 'config.filename_glove']
         for i in range(len(args.filename)):
@@ -31,14 +37,9 @@ def main():
     file_check([config.filename_train, config.filename_valid, config.filename_test, config.filename_glove])
 
     # Generators
-    if config.flag_text:
-        train = get_datasets(config.filename_train)
-        valid = get_datasets(config.filename_valid)
-        test = get_datasets(config.filename_test)
-    else:
-        train = get_datasets_1(config.filename_train, lowercase=True)
-        valid = get_datasets_1(config.filename_valid, lowercase=True)
-        test = get_datasets_1(config.filename_test, lowercase=True)
+    train = get_datasets(config.filename_train, lowercase=True)
+    valid = get_datasets(config.filename_valid, lowercase=True)
+    test = get_datasets(config.filename_test, lowercase=True)
 
     config.max_length = seq_len(train)
 

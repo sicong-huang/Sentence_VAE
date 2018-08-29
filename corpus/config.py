@@ -16,9 +16,9 @@ class Config():
     filename_trimmed_glove = 'data/trimmed_glove.npz'
 
     # dataset
-    filename_train = 'raw_data/train'
-    filename_valid = 'raw_data/valid'
-    filename_test = 'raw_data/test'
+    filename_train = 'raw_data/ptb/train'
+    filename_valid = 'raw_data/ptb/valid'
+    filename_test = 'raw_data/ptb/test'
 
     # trimmed data
     filename_trimmed_train = 'data/train.npz'
