@@ -8,6 +8,8 @@ def main():
     config = Config(load=False)
 
     # input
+
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--processed', '-p', action='store_true', help='files are processed')
     parser.add_argument('--filename', '-f', metavar='filename', type=str, nargs='+',

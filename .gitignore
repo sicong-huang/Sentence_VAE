@@ -3,3 +3,5 @@ __pycache__/
 another.py
 .test.py.swp
 .test_sentences.txt.swp
+glove.6B/
+.idea/
