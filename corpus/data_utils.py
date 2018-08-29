@@ -32,6 +32,7 @@ def dim_check(filename, dim_word):
             datasets.append(words)
     return datasets'''
 
+
 def get_datasets(filename, lowercase):
     datasets = []
     with open(filename, 'r', encoding='utf-8') as f:
@@ -48,6 +49,7 @@ def get_datasets(filename, lowercase):
                         line.pop(line.index(word))
             datasets.append(line)
     return datasets
+
 
 '''def get_datasets_ptb(filename):
     datasets = []
@@ -139,24 +141,45 @@ def write_vocab(filename, vocab):
         pickle.dump(vocab, f)
 
 
+# with open('data/word2index.pkl', 'rb') as f:
+#     vocab = pickle.load(f)
+# eg.sentence = ['no', 'it', 'was', 'n't', 'black', 'monday']
+def sentence2index(sentence, vocab, max_length):
+    result = np.zeros(max_length)
+    for i in range(max_length):
+        if i == max_length - 1 and i == len(sentence) - 2:
+            result[max_length - 1] = vocab['eos']
+            break
+        if i == len(sentence):
+            result[i] = vocab['eos']
+            break
+        else:
+            flag = vocab.get(sentence[i])
+            if flag is None:
+                result[i] = vocab['unk']
+            else:
+                result[i] = vocab[sentence[i]]
+    return result
+
+
 def get_trimmed_datasets(filename, datasets, vocab, max_length):
     embeddings = np.zeros([len(datasets), max_length])
     k = 0
     for line in datasets:
-        sen = np.zeros(max_length)
-        for i in range(max_length):
-            if i == max_length-1 and i == len(line)-2:
-                sen[max_length-1] = vocab['eos']
-                break
-            if i == len(line):
-                sen[i] = vocab['eos']
-                break
-            else:
-                flag = vocab.get(line[i])
-                if flag is None:
-                    sen[i] = vocab['unk']
-                else:
-                    sen[i] = vocab[line[i]]
+        sen = sentence2index(line, vocab, max_length)
         embeddings[k] = sen
         k += 1
     np.savez_compressed(filename, index=embeddings)
+
+
+# with open('data/index2word.pkl', 'rb') as f:
+#     vocab = pickle.load(f)
+def index2sentence(index, vocab):
+    result = []
+    for i in index:
+        if i == 0:
+            break
+        else:
+            result.append(vocab[i])
+    return ' '.join(result)
+
