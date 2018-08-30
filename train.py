@@ -4,7 +4,7 @@ from keras.utils.vis_utils import plot_model
 import matplotlib.pyplot as plt
 
 import model
-import data_utils
+import utils
 
 def parse():
     parser = argparse.ArgumentParser(description='program to train a sequence VAE')
@@ -24,12 +24,12 @@ def parse():
 
 # load data and fit it to batch size
 def load_all_data(batch_size):
-    train = data_utils.load_data('train.npz', 'index', np.int32)
-    valid = data_utils.load_data('valid.npz', 'index', np.int32)
-    test = data_utils.load_data('test.npz', 'index', np.int32)
-    train = data_utils.fit_batch(train, batch_size)
-    valid = data_utils.fit_batch(valid, batch_size)
-    test = data_utils.fit_batch(test, batch_size)
+    train = utils.load_data('train.npz', 'index', np.int32)
+    valid = utils.load_data('valid.npz', 'index', np.int32)
+    test = utils.load_data('test.npz', 'index', np.int32)
+    train = utils.fit_batch(train, batch_size)
+    valid = utils.fit_batch(valid, batch_size)
+    test = utils.fit_batch(test, batch_size)
     return train, valid, test
 
 def plot_models(vae, encoder, decoder):
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     bos_idx = 1
     seq_len = train.shape[1]
     batch_shape = (args.batch, seq_len)
-    embedding_matrix = data_utils.load_data('trimmed_glove.npz', 'embeddings', np.float32)
+    embedding_matrix = utils.load_data('trimmed_glove.npz', 'embeddings', np.float32)
 
     # construct models
     model_struct = model.ModelStruct(batch_shape, embedding_matrix, args.latent, bos_idx)

@@ -3,7 +3,7 @@ import nltk
 import keras
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 
-import data_utils
+import utils
 
 # encode a sentence string to latent representation
 
@@ -53,8 +53,8 @@ if __name__ == '__main__':
 
     ####---- generation ----####
     # load word2idx and idx2word
-    idx2word = data_utils.load_object('data/index2word.pkl')
-    word2idx = data_utils.load_object('data/word2index.pkl')
+    idx2word = utils.load_object('data/index2word.pkl')
+    word2idx = utils.load_object('data/word2index.pkl')
 
     # generate
     eos_idx = word2idx['eos']
