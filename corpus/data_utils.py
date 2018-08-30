@@ -66,8 +66,8 @@ def seq_len(datasets):
     for line in datasets:
         data.append(len(line))
     mean = sum(data) / len(data)
-    var = np.var(data)
-    result = mean + var
+    v = np.std(data)
+    result = mean + v
     result = int(round(result))
     return result
 
@@ -141,15 +141,20 @@ def write_vocab(filename, vocab):
         pickle.dump(vocab, f)
 
 
+# cut word
+def sentence2index(sentence, vocab, max_length):
+    sentence = sentence.lower()
+    words = nltk.word_tokenize(sentence)
+    result = sent2index(words, vocab, max_length)
+    return result
+
+
 # with open('data/word2index.pkl', 'rb') as f:
 #     vocab = pickle.load(f)
 # eg.sentence = ['no', 'it', 'was', 'n't', 'black', 'monday']
-def sentence2index(sentence, vocab, max_length):
+def sent2index(sentence, vocab, max_length):
     result = np.zeros(max_length)
     for i in range(max_length):
-        if i == max_length - 1 and i == len(sentence) - 2:
-            result[max_length - 1] = vocab['eos']
-            break
         if i == len(sentence):
             result[i] = vocab['eos']
             break
@@ -166,7 +171,7 @@ def get_trimmed_datasets(filename, datasets, vocab, max_length):
     embeddings = np.zeros([len(datasets), max_length])
     k = 0
     for line in datasets:
-        sen = sentence2index(line, vocab, max_length)
+        sen = sent2index(line, vocab, max_length)
         embeddings[k] = sen
         k += 1
     np.savez_compressed(filename, index=embeddings)
