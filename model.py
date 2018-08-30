@@ -6,7 +6,7 @@ from keras.models import Model
 import keras.backend as K
 
 class ModelStruct:
-    def __init__(self, batch_shape, embedding_matrix, latent_size):
+    def __init__(self, batch_shape, embedding_matrix, latent_size, bos_idx):
         # self.__check_inputs(batch_shape, embedding_dim, latent_size, vocab_size)  # check inputs are valid
 
         self.batch_shape = batch_shape  # shape of input data
@@ -14,6 +14,7 @@ class ModelStruct:
         vocab_size, self.embedding_dim = embedding_matrix.shape
         self.batch_size, self.seq_len = batch_shape
         self.embedded_shape = (self.batch_size, self.seq_len, self.embedding_dim)  # shape of embedded data
+        self.bos = K.constant(bos_idx, dtype='int32')
 
         ### embedding layer ###
         self.embedding_layer = Embedding(vocab_size, self.embedding_dim,\
@@ -31,6 +32,20 @@ class ModelStruct:
         self.convert_layer = Lambda(self.__convert, name='convert_layer')
         self.decode_gru = GRU(self.latent_size, return_sequences=True, return_state=True, name='decoder_gru')
         self.output_dense = Dense(vocab_size, activation='softmax', name='decoder_output')
+
+    # sampling function used by sampling layer
+    def __sampling(self, args):
+        sample_mean, sample_log_std = args
+        epsilon = K.random_normal(shape=(self.batch_size, self.latent_size))
+        return sample_mean + K.exp(sample_log_std) * epsilon
+
+    # a function used in decoder input
+    # to convert training data into RNN input form
+    def __convert(self, data):
+        bos_tensor = self.embedding_layer(K.ones(shape=(self.batch_size, 1), dtype='int32') * self.bos)
+        data = K.concatenate([bos_tensor, data], axis=1)
+        data = K.slice(data, start=(0, 0, 0), size=self.embedded_shape)
+        return data
 
     # return an end-to-end VAE for training
     def assemble_vae_train(self):
@@ -136,16 +151,3 @@ class ModelStruct:
             raise TypeError('expect "vocab_size" to be type int, instead got {}'.format(vocab_size_type))
         elif vocab_size <= 0:
             raise ValueError('expect "vocab_size" to be greater than 0, instead got {}'.format(vocab_size))
-
-    # sampling function used by sampling layer
-    def __sampling(self, args):
-        sample_mean, sample_log_std = args
-        epsilon = K.random_normal(shape=(self.batch_size, self.latent_size))
-        return sample_mean + K.exp(sample_log_std) * epsilon
-
-    # a function used in decoder input
-    # to convert training data into RNN input form
-    def __convert(self, data):
-        data = K.concatenate([K.zeros(shape=(self.batch_size, 1, self.embedding_dim)), data], axis=1)
-        data = K.slice(data, start=(0, 0, 0), size=self.embedded_shape)
-        return data

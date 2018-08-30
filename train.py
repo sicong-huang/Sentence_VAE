@@ -18,7 +18,7 @@ def parse():
                         help='plot models')
     parser.add_argument('--summary', '-s', action='store_true',
                         help='display model summary')
-    parser.add_argument('--history', '-h', action='store_true',
+    parser.add_argument('--history', '-hi', action='store_true',
                         help='plot training history')
     return parser.parse_args()
 
@@ -71,12 +71,13 @@ if __name__ == '__main__':
 
     train, valid, test = load_all_data(args.batch)  # load training data
 
+    bos_idx = 1
     seq_len = train.shape[1]
     batch_shape = (args.batch, seq_len)
     embedding_matrix = data_utils.load_data('trimmed_glove.npz', 'embeddings', np.float32)
 
     # construct models
-    model_struct = model.ModelStruct(batch_shape, embedding_matrix, args.latent)
+    model_struct = model.ModelStruct(batch_shape, embedding_matrix, args.latent, bos_idx)
     vae = model_struct.assemble_vae_train()
     encoder = model_struct.assemble_encoder_infer()
     decoder = model_struct.assemble_decoder_infer()
