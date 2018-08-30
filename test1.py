@@ -5,10 +5,11 @@ a = f['index']
 for i in range(10):
     print(a[i])
 
+# with open('embedding/glove.6B/glove.6B.300d.txt') as f:
+#     print(f.readline())
 with open('data/word2index.pkl', 'rb') as f:
     a = pickle.load(f)
     print(a)
-
 '''with open('data/test','r',encoding='utf-8') as f:
     i = 1
     for line in f:

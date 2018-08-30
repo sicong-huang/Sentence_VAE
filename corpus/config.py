@@ -28,8 +28,6 @@ class Config():
     max_length = 32
 
     # sign
-    flag_text = True
-    start = True
     pad = True
 
     # vocab

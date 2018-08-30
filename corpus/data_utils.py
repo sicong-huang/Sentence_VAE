@@ -94,7 +94,7 @@ def word2index(train_words, glove_vocab):
     words = list(words)
     vocab = dict()
     vocab['<pad>'] = 0
-    vocab['<start>'] = 1
+    vocab['bos'] = 1
     vocab['eos'] = 2
     vocab['unk'] = 3
     i = 4
@@ -114,7 +114,7 @@ def index2word(vocab):
     return index
 
 
-def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab, start, pad):
+def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab, pad):
     embeddings = dict()
     with open(filename_glove, 'r', encoding='utf-8') as f:
         for line in f:
@@ -124,11 +124,8 @@ def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab, sta
                 embedding = [float(x) for x in line[1:]]
                 embeddings[vocab[word]] = embedding
     if pad:
-        embedding = np.ones(dim_word)
-        embeddings[0] = embedding
-    if start:
         embedding = np.zeros(dim_word)
-        embeddings[1] = embedding
+        embeddings[0] = embedding
     embeddings = sorted(embeddings.items(), key=lambda x: x[0], reverse=False)
     embeddings_array = np.zeros((embeddings[-1][0]+1, dim_word))
     for i in embeddings:

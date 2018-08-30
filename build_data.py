@@ -68,7 +68,7 @@ def main():
     write_vocab(config.filename_index, index)
 
     # embedding
-    glove_embedding(config.filename_glove, config.filename_trimmed_glove, config.dim_word, vocab, config.start, config.pad)
+    glove_embedding(config.filename_glove, config.filename_trimmed_glove, config.dim_word, vocab, config.pad)
 
     # trim datasets
     get_trimmed_datasets(config.filename_trimmed_train, train, vocab, config.max_length)
