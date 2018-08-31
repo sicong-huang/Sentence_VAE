@@ -27,9 +27,6 @@ class Config():
 
     max_length = 32
 
-    # sign
-    pad = True
-
     # vocab
     filename_words = 'data/word2index.pkl'
     filename_index = 'data/index2word.pkl'

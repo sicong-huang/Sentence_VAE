@@ -2,6 +2,7 @@ import numpy as np
 import pickle
 import nltk
 import os
+from scipy.stats import truncnorm
 
 # check whether the given 'filename' exists
 # raise a FileNotFoundError when file not found
@@ -94,9 +95,9 @@ def word2index(train_words, glove_vocab):
     words = list(words)
     vocab = dict()
     vocab['<pad>'] = 0
-    vocab['bos'] = 1
-    vocab['eos'] = 2
-    vocab['unk'] = 3
+    vocab['<bos>'] = 1
+    vocab['<eos>'] = 2
+    vocab['<unk>'] = 3
     i = 4
     for word in words:
         flag = vocab.get(word)
@@ -114,7 +115,7 @@ def index2word(vocab):
     return index
 
 
-def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab, pad):
+def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab):
     embeddings = dict()
     with open(filename_glove, 'r', encoding='utf-8') as f:
         for line in f:
@@ -123,9 +124,10 @@ def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab, pad
             if word in vocab.keys():
                 embedding = [float(x) for x in line[1:]]
                 embeddings[vocab[word]] = embedding
-    if pad:
-        embedding = np.zeros(dim_word)
-        embeddings[0] = embedding
+        for i in range(4):
+            np.random.seed(i)
+            embedding = truncnorm.rvs(-2, 2, size=dim_word)
+            embeddings[i] = embedding
     embeddings = sorted(embeddings.items(), key=lambda x: x[0], reverse=False)
     embeddings_array = np.zeros((embeddings[-1][0]+1, dim_word))
     for i in embeddings:
@@ -153,12 +155,12 @@ def sent2index(sentence, vocab, max_length):
     result = np.zeros(max_length)
     for i in range(max_length):
         if i == len(sentence):
-            result[i] = vocab['eos']
+            result[i] = vocab['<eos>']
             break
         else:
             flag = vocab.get(sentence[i])
             if flag is None:
-                result[i] = vocab['unk']
+                result[i] = vocab['<unk>']
             else:
                 result[i] = vocab[sentence[i]]
     return result

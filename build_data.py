@@ -8,8 +8,6 @@ def main():
     config = Config(load=False)
 
     # input
-
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--processed', '-p', type=str, help='ptb or wiki')
     parser.add_argument('--filename', '-f', metavar='filename', type=str, nargs='+',
@@ -68,7 +66,7 @@ def main():
     write_vocab(config.filename_index, index)
 
     # embedding
-    glove_embedding(config.filename_glove, config.filename_trimmed_glove, config.dim_word, vocab, config.pad)
+    glove_embedding(config.filename_glove, config.filename_trimmed_glove, config.dim_word, vocab)
 
     # trim datasets
     get_trimmed_datasets(config.filename_trimmed_train, train, vocab, config.max_length)
