@@ -133,7 +133,6 @@ def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab):
     for i in embeddings:
         embeddings_array[i[0]] = i[1]
     np.savez_compressed(filename_trimmed_glove, embeddings=embeddings_array)
-    np.save('data/bos.npy', embeddings_array[1])
 
 def write_vocab(filename, vocab):
     with open(filename, 'wb') as f:
@@ -186,4 +185,3 @@ def index2sentence(index, vocab):
         else:
             result.append(vocab[i])
     return ' '.join(result)
-
