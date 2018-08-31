@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     train, valid, test = load_all_data(args.batch)  # load training data
 
-    bos_idx = 1
+    bos_idx = 1  # '<bos>'' has index 1
     seq_len = train.shape[1]
     batch_shape = (args.batch, seq_len)
     embedding_matrix = utils.load_data('trimmed_glove.npz', 'embeddings', np.float32)

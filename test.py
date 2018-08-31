@@ -24,8 +24,8 @@ def encode(sentence, encoder, word2idx, seq_len):
     return encoder.predict(np.array([sequence]))
 
 # decode a code into string sentence
-def decode(code, decoder, idx2word, seq_len, eos_idx, detok):
-    out = np.array(1).reshape(1, -1)  # initial "<start>" token
+def decode(code, decoder, idx2word, seq_len, bos_vector, eos_idx, detok):
+    out = bos_vector
     state = code
     predicted = []
     for _ in range(seq_len):
@@ -57,13 +57,14 @@ if __name__ == '__main__':
     word2idx = utils.load_object('data/word2index.pkl')
 
     # generate
-    eos_idx = word2idx['eos']
+    bos_vector = np.load('data/bos.npy').reshape(1, -1)
+    eos_idx = 2  # '<eos' has index 2
     detok = TreebankWordDetokenizer()
     with open('sentences.txt', 'r') as f:
         for sent in f:
             orig_sent = sent.strip('\n')
             code = encode(orig_sent, encoder, word2idx, seq_len)
-            dec_sent = decode(code, decoder, idx2word, seq_len + 10, eos_idx, detok)
+            dec_sent = decode(code, decoder, idx2word, seq_len, bos_vector, eos_idx, detok)
             print(orig_sent)
             print(dec_sent)
             print()
@@ -75,4 +76,4 @@ if __name__ == '__main__':
     end_code = encode(end_sent, encoder, word2idx, seq_len).reshape(-1)
     all_codes = linspace(start_code, end_code, 10)
     for cod in all_codes:
-        print(decode(cod.reshape(1, -1), decoder, idx2word, seq_len, eos_idx, detok))
+        print(decode(cod.reshape(1, -1), decoder, idx2word, seq_len, bos_vector, eos_idx, detok))
