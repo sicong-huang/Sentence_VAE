@@ -1,7 +1,7 @@
 import tensorflow as tf
 import keras
 
-from keras.layers import Input, Dense, Lambda, GRU, TimeDistributed, Embedding
+from keras.layers import Input, Dense, Lambda, GRU, TimeDistributed, Embedding, Bidirectional
 from keras.models import Model
 import keras.backend as K
 
@@ -21,7 +21,7 @@ class ModelStruct:
                 weights=[embedding_matrix], trainable=False)
 
         ### encoder components ###
-        self.encode_gru = GRU(self.latent_size, name='encoder_gru')
+        self.encode_gru = Bidirectional(GRU(self.latent_size, name='encoder_gru'))
         self.mean_output = Dense(self.latent_size, name='mean_dense')  # output layer for mean
         self.var_output = Dense(self.latent_size, name='variance_dense')  # output layer for variance
 

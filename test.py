@@ -3,24 +3,26 @@ import nltk
 import keras
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 
+from corpus.data_utils import sentence2index
 import utils
 
 # encode a sentence string to latent representation
 
 ####==== proprocess input sentences the same way =====####
 def encode(sentence, encoder, word2idx, seq_len):
-    tokens = nltk.word_tokenize(sentence)
-    tokens.append('<eos>')
-    sequence = []
-    for word in tokens:
-        try:
-            sequence.append(word2idx[word])
-        except KeyError:
-            sequence.append(word2idx['<unk>'])
-    if len(sequence) < seq_len:
-        sequence = sequence + [word2idx['<pad>']] * (seq_len - len(sequence))
-    elif len(sequence) > seq_len:
-        sequence = sequence[:seq_len]
+    # tokens = nltk.word_tokenize(sentence)
+    # tokens.append('<eos>')
+    # sequence = []
+    # for word in tokens:
+    #     try:
+    #         sequence.append(word2idx[word])
+    #     except KeyError:
+    #         sequence.append(word2idx['<unk>'])
+    # if len(sequence) < seq_len:
+    #     sequence = sequence + [word2idx['<pad>']] * (seq_len - len(sequence))
+    # elif len(sequence) > seq_len:
+    #     sequence = sequence[:seq_len]
+    sequence = sentence2index(sentence, word2idx, seq_len)
     return encoder.predict(np.array([sequence]))
 
 # decode a code into string sentence
