@@ -151,7 +151,7 @@ def sentence2index(sentence, vocab, max_length):
 #     vocab = pickle.load(f)
 # eg.sentence = ['no', 'it', 'was', 'n't', 'black', 'monday']
 def sent2index(sentence, vocab, max_length):
-    result = np.zeros(max_length)
+    result = np.zeros(max_length, dtype=np.int32)
     for i in range(max_length):
         if i == len(sentence):
             result[i] = vocab['<eos>']
