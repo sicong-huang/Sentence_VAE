@@ -57,14 +57,14 @@ if __name__ == '__main__':
     word2idx = utils.load_object('data/word2index.pkl')
 
     # generate
-    bos_idx = 1  #'<bos>' has index 1
-    eos_idx = 2  # '<eos>' has index 2
+    bos_idx = word2idx['<bos>']
+    eos_idx = word2idx['<eos>']
     detok = TreebankWordDetokenizer()
     with open('sentences.txt', 'r') as f:
         for sent in f:
             orig_sent = sent.strip('\n')
             code = encode(orig_sent, encoder, word2idx, seq_len)
-            dec_sent = decode(code, decoder, idx2word, seq_len, bos_idx, eos_idx, detok)
+            dec_sent = decode(code, decoder, idx2word, seq_len + 10, bos_idx, eos_idx, detok)
             print(orig_sent)
             print(dec_sent)
             print()
