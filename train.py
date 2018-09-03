@@ -102,5 +102,7 @@ if __name__ == '__main__':
     print('encoder saved at: saved_models/encoder.h5')
     decoder.save('saved_models/decoder.h5')
     print('decoder saved at: saved_models/decoder.h5')
-
+    vae.save('saved_models/vae.h5')
+    print('vae saved at: saved_models/vae.h5')
+    
     #####----- 1 problem: accuracy -----######
