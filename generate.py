@@ -48,3 +48,4 @@ if __name__ == '__main__':
                 result.append(idx2word[index])
             result = ' '.join(result)
             f.write(result)
+    f.close()
