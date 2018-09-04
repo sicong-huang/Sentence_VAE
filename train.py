@@ -12,7 +12,7 @@ def parse():
                         help='batch size for training (default 256)')
     parser.add_argument('--epochs', '-e', type=int, default=20,
                         help='number of training epochs to perform (default 20)')
-    parser.add_argument('--latent', '-l', type=int, default=256,
+    parser.add_argument('--latent', '-l', type=int, default=512,
                         help='number of dimensions in latent representation (default 256)')
     parser.add_argument('--plot', '-p', action='store_true',
                         help='plot models')
@@ -102,5 +102,5 @@ if __name__ == '__main__':
     print('encoder saved at: saved_models/encoder.h5')
     decoder.save('saved_models/decoder.h5')
     print('decoder saved at: saved_models/decoder.h5')
-    
+
     #####----- 1 problem: accuracy -----######
