@@ -35,6 +35,7 @@ if __name__ == '__main__':
     bos_idx = word2idx['<bos>']
     eos_idx = word2idx['<eos>']
 
+    f = open('results/test.txt', 'w')
     for i in range(0, test.shape[0] - batch_size, batch_size):
         code = encoder.predict(test[i: i + batch_size])
         predicted = decode(code, decoder, batch_size, seq_len, bos_idx)
@@ -46,15 +47,4 @@ if __name__ == '__main__':
                     break
                 result.append(idx2word[index])
             result = ' '.join(result)
-            print(result)
-    # generate
-
-    # detok = TreebankWordDetokenizer()
-    # with open('sentences.txt', 'r') as f:
-    #     for sent in f:
-    #         orig_sent = sent.strip('\n')
-    #         code = encode(orig_sent, encoder, word2idx, seq_len)
-    #         dec_sent = decode(code, decoder, idx2word, seq_len + 10, bos_idx, eos_idx, detok)
-    #         print(orig_sent)
-    #         print(dec_sent)
-    #         print()
+            f.write(result)
