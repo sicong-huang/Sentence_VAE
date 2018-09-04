@@ -1,6 +1,8 @@
 import nltk
 import numpy as np
 import keras
+import sys
+sys.path.append('../')
 from corpus.data_utils import sentence2index
 import utils
 import numpy as np
@@ -33,10 +35,10 @@ def decode(code, decoder, idx2word, seq_len, bos_idx, eos_idx, detok):
 def k_means(x, num):
     kmeans = KMeans(n_clusters=num, random_state=0).fit(result)
     centers = kmeans.cluster_centers_
-    print('label')
-    print(kmeans.labels_)
-    print('center')
-    print(centers)
+    # print('label')
+    # print(kmeans.labels_)
+    # print('center')
+    # print(centers)
     return centers
 
 
@@ -46,11 +48,11 @@ def GMM(x, num):
     for i in range(num):
         for j in range(x.shape[1]):
             y[i][j] = gmmModel.means_[i][j]
-    print('label')
-    label = gmmModel.predict(x)
-    print(label)
-    print('center')
-    print(y)
+    # print('label')
+    # label = gmmModel.predict(x)
+    # print(label)
+    # print('center')
+    # print(y)
     return y
 
 
