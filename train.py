@@ -87,9 +87,16 @@ if __name__ == '__main__':
     if args.summary:  # display model summary when needed
         summarize_models(vae, encoder, decoder)
 
+    def save(epoch, logs):
+        if (epoch + 1) % 10 == 0:
+            encoder.save('saved_models/log_models/encoder_{}.h5'.format(epoch + 1))
+            decoder.save('saved_models/log_models/decoder_{}.h5'.format(epoch + 1))
+            print('epoch', epoch + 1, 'models saved')
+    callback = keras.callbacks.LambdaCallback(on_epoch_end=save)
+
     # train
     hist = vae.fit(train, train, batch_size=args.batch, epochs=args.epochs,
-                   shuffle=True, validation_data=(valid, valid))
+                   shuffle=True, validation_data=(valid, valid), callback=callback)
     loss, acc = vae.evaluate(test, test, batch_size=args.batch)
     print('evaluation result')
     print('loss =', loss, 'accuracy =', acc)
