@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
     # train
     hist = vae.fit(train, train, batch_size=args.batch, epochs=args.epochs,
-                   shuffle=True, validation_data=(valid, valid), callback=callback)
+                   shuffle=True, validation_data=(valid, valid), callback=[callback])
     loss, acc = vae.evaluate(test, test, batch_size=args.batch)
     print('evaluation result')
     print('loss =', loss, 'accuracy =', acc)
