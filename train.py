@@ -1,5 +1,6 @@
 import numpy as np
 import argparse
+import keras
 from keras.utils.vis_utils import plot_model
 import matplotlib.pyplot as plt
 
