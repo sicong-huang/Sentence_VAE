@@ -6,7 +6,7 @@ class Config():
         pass
 
 
-    # embedding
+    # word embedding dimension
     dim_word = 300
 
     # glove files
@@ -25,13 +25,9 @@ class Config():
     filename_trimmed_valid = 'data/valid.npz'
     filename_trimmed_test = 'data/test.npz'
 
+    # sequence length
     max_length = 32
 
     # vocab
     filename_words = 'data/word2index.pkl'
     filename_index = 'data/index2word.pkl'
-
-    # training
-
-    #model hyperparameters
-
