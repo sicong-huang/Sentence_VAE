@@ -7,6 +7,7 @@ this test program is split into 2 parts
 import numpy as np
 import nltk
 import keras
+import argparse
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 
 from corpus.data_utils import sentence2index
@@ -37,7 +38,10 @@ def linspace(start, end, N):
     return step * np.arange(N)[:, None] + start
 
 if __name__ == '__main__':
-    seq_len = 32
+    parser = argparse.ArgumentParser(description='a program to display the functionality of VAE')
+    parser.add_argument('--seqlen', '-s', type=int, default=31,
+                        help='the sequence length used for training the VAE (default 31)')
+    args = parser.parse_args()
 
     # load pretrained encoder and decoder
     encoder = keras.models.load_model('saved_models/encoder.h5')
@@ -58,8 +62,8 @@ if __name__ == '__main__':
     with open('sentences.txt', 'r') as f:
         for sent in f:
             orig_sent = sent.strip('\n')
-            code = encode(orig_sent, encoder, word2idx, seq_len)
-            dec_sent = decode(code, decoder, idx2word, seq_len + 10, bos_idx, eos_idx, detok)
+            code = encode(orig_sent, encoder, word2idx, args.seqlen)
+            dec_sent = decode(code, decoder, idx2word, args.seqlen + 10, bos_idx, eos_idx, detok)
             print(orig_sent)
             print(dec_sent)
             print()
@@ -67,8 +71,8 @@ if __name__ == '__main__':
     print('===== interpolation =====')
     start_sent = 'how is this possible'
     end_sent = 'what i cannot create i do not understand'
-    start_code = encode(start_sent, encoder, word2idx, seq_len).reshape(-1)
-    end_code = encode(end_sent, encoder, word2idx, seq_len).reshape(-1)
+    start_code = encode(start_sent, encoder, word2idx, args.seqlen).reshape(-1)
+    end_code = encode(end_sent, encoder, word2idx, args.seqlen).reshape(-1)
     all_codes = linspace(start_code, end_code, 10)
     for cod in all_codes:
-        print(decode(cod.reshape(1, -1), decoder, idx2word, seq_len, bos_idx, eos_idx, detok))
+        print(decode(cod.reshape(1, -1), decoder, idx2word, args.seqlen, bos_idx, eos_idx, detok))

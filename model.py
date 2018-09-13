@@ -5,10 +5,18 @@ from keras.layers import Input, Dense, Lambda, GRU, TimeDistributed, Embedding, 
 from keras.models import Model
 import keras.backend as K
 
+'''
+A class that contains all the components that make up a VAE,
+it also contains methods that assemble them together to form VAE, encoder, and decoder
+'''
 class ModelStruct:
+    '''
+    batch_shape: shape of input data in tuple of length 2 (batch, seq_len)
+    embedding_matrix: a 2-dimensional ndarray in which each row is the embedding of a word
+    latent_size: an int representing the length of encoded sentence vector
+    bos_idx: an int representing the index of '<bos>' token
+    '''
     def __init__(self, batch_shape, embedding_matrix, latent_size, bos_idx):
-        # self.__check_inputs(batch_shape, embedding_dim, latent_size, vocab_size)  # check inputs are valid
-
         self.batch_shape = batch_shape  # shape of input data
         self.latent_size = latent_size
         vocab_size, self.embedding_dim = embedding_matrix.shape
@@ -111,9 +119,6 @@ class ModelStruct:
 
     The decoder, when called on .predict() method, returns a probability distribution
     of the next word over all words in vocabulary.
-
-    In this version, embedding matrix has to be predefined, and it must contain
-    <start> token with its embedding being all zeros.
     '''
     def assemble_decoder_infer(self):
         init_state = Input(shape=(self.latent_size,), name='decoder_initial_state')
@@ -123,31 +128,3 @@ class ModelStruct:
         # decode_out = Reshape()
         decode_out = TimeDistributed(self.output_dense)(decode_states)
         return Model([decode_in, init_state], [decode_out, hidden_state], name='decoder')
-
-    # helper method used to check inputs are valid
-    # throws corresponding exceptions when expectations are not met
-    def __check_inputs(self, batch_shape, embedding_dim, latent_size, vocab_size):
-        batch_shape_type = type(batch_shape)
-        batch_shape_len = len(batch_shape)
-        embedding_dim_type = type(embedding_dim)
-        latent_size_type = type(latent_size)
-        vocab_size_type = type(vocab_size)
-
-        if batch_shape_type != tuple:
-            raise TypeError('expect "batch_shape" to be type tuple, instead got {}'.format(batch_shape_type))
-        elif batch_shape_len != 2:
-            raise ValueError('expect "batch_shape" to have length == 2, instead got {}'.format(batch_shape_len))
-        elif not all(i > 0 for i in batch_shape):
-            raise ValueError('all elements in batch_shape must be greater than 0, instead got {}'.format(batch_shape))
-        elif embedding_dim_type != int:
-            raise TypeError('expect "embedding_dim" to be type int, instead got {}'.format(embedding_dim_type))
-        elif embedding_dim <= 0:
-            raise ValueError('expect "embedding_dim" to be greater than 0, instead got {}'.format(embedding_dim))
-        elif latent_size_type != int:
-            raise TypeError('expect "latent_size" to be type int, instead got {}'.format(latent_size_type))
-        elif latent_size <= 0:
-            raise ValueError('expect "latent_size" to be greater than 0, instead got {}'.format(latent_size))
-        elif vocab_size_type != int:
-            raise TypeError('expect "vocab_size" to be type int, instead got {}'.format(vocab_size_type))
-        elif vocab_size <= 0:
-            raise ValueError('expect "vocab_size" to be greater than 0, instead got {}'.format(vocab_size))

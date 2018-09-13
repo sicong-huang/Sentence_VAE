@@ -1,3 +1,9 @@
+'''
+This program trains a new pair of encoder and decoder based on user inputs.
+Along with training, it can also generate plots of models, and plot of training history.
+After training, the trained models are stored in ./saved_models/
+'''
+
 import numpy as np
 import argparse
 from keras.utils.vis_utils import plot_model
@@ -7,13 +13,13 @@ import model
 import utils
 
 def parse():
-    parser = argparse.ArgumentParser(description='program to train a sequence VAE')
+    parser = argparse.ArgumentParser(description='a program to train a sequence VAE')
     parser.add_argument('--batch', '-b', type=int, default=256,
                         help='batch size for training (default 256)')
     parser.add_argument('--epochs', '-e', type=int, default=20,
                         help='number of training epochs to perform (default 20)')
     parser.add_argument('--latent', '-l', type=int, default=512,
-                        help='number of dimensions in latent representation (default 256)')
+                        help='number of dimensions in latent representation (default 512)')
     parser.add_argument('--plot', '-p', action='store_true',
                         help='plot models')
     parser.add_argument('--summary', '-s', action='store_true',
@@ -71,7 +77,7 @@ if __name__ == '__main__':
 
     train, valid, test = load_all_data(args.batch)  # load training data
 
-    bos_idx = 1  # '<bos>'' has index 1
+    bos_idx = 1  # '<bos>' has index 1
     seq_len = train.shape[1]
     batch_shape = (args.batch, seq_len)
     embedding_matrix = utils.load_data('trimmed_glove.npz', 'embeddings', np.float32)
@@ -102,5 +108,3 @@ if __name__ == '__main__':
     print('encoder saved at: saved_models/encoder.h5')
     decoder.save('saved_models/decoder.h5')
     print('decoder saved at: saved_models/decoder.h5')
-
-    #####----- 1 problem: accuracy -----######

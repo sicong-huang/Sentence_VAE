@@ -1,3 +1,9 @@
+'''
+This file is used to generate a full encode-then-decoded version of test data in full,
+the generated sentences are used for perplexity calculation.
+Generated file is stored in ./results/
+'''
+
 import numpy as np
 import keras
 
