@@ -1,3 +1,5 @@
+# This script is used for downloading glove embedding
+
 #!/bin/bash
 
 wget http://nlp.stanford.edu/data/glove.6B.zip -P ../embedding/
