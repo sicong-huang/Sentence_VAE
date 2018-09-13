@@ -1,3 +1,9 @@
+'''
+this test program is split into 2 parts
+1. reads in sentences from the file 'sentences.txt' and encode then decode them
+2. interpolate between 2 sentences
+'''
+
 import numpy as np
 import nltk
 import keras
@@ -7,21 +13,7 @@ from corpus.data_utils import sentence2index
 import utils
 
 # encode a sentence string to latent representation
-
-####==== proprocess input sentences the same way =====####
 def encode(sentence, encoder, word2idx, seq_len):
-    # tokens = nltk.word_tokenize(sentence)
-    # tokens.append('<eos>')
-    # sequence = []
-    # for word in tokens:
-    #     try:
-    #         sequence.append(word2idx[word])
-    #     except KeyError:
-    #         sequence.append(word2idx['<unk>'])
-    # if len(sequence) < seq_len:
-    #     sequence = sequence + [word2idx['<pad>']] * (seq_len - len(sequence))
-    # elif len(sequence) > seq_len:
-    #     sequence = sequence[:seq_len]
     sequence = sentence2index(sentence, word2idx, seq_len)
     return encoder.predict(np.array([sequence]))
 
@@ -62,6 +54,7 @@ if __name__ == '__main__':
     bos_idx = word2idx['<bos>']
     eos_idx = word2idx['<eos>']
     detok = TreebankWordDetokenizer()
+    print('===== encode and decode =====')
     with open('sentences.txt', 'r') as f:
         for sent in f:
             orig_sent = sent.strip('\n')
@@ -71,9 +64,9 @@ if __name__ == '__main__':
             print(dec_sent)
             print()
 
-    print('interpolation:')
-    start_sent = 'i want to be like this man'
-    end_sent = 'there is no way that you can make it'
+    print('===== interpolation =====')
+    start_sent = 'how is this possible'
+    end_sent = 'what i cannot create i do not understand'
     start_code = encode(start_sent, encoder, word2idx, seq_len).reshape(-1)
     end_code = encode(end_sent, encoder, word2idx, seq_len).reshape(-1)
     all_codes = linspace(start_code, end_code, 10)
