@@ -12,6 +12,8 @@ def file_check(filename):
             raise FileNotFoundError('No such file or directory: {}'.format(name))
 
 
+# check whether the given 'dim_word' is consistent with 'filename'
+# rasie a ValueError when it's not consistent
 def dim_check(filename, dim_word):
     with open(filename, 'r', encoding='utf-8') as f:
         line = f.readline()
@@ -21,6 +23,8 @@ def dim_check(filename, dim_word):
             raise ValueError('dimension of input file "filename" must agree with dim_word. Found filename dimension to be {} and \
                              dim_word to be {}'.format(num - 1, dim_word))
 
+
+# punctuated data
 '''def get_datasets_1(filename, lowercase):
     datasets = []
     with open(filename, 'r', encoding='utf-8') as f:
@@ -34,6 +38,7 @@ def dim_check(filename, dim_word):
     return datasets'''
 
 
+# put data in list
 def get_datasets(filename, lowercase):
     datasets = []
     with open(filename, 'r', encoding='utf-8') as f:
@@ -45,23 +50,14 @@ def get_datasets(filename, lowercase):
                 continue
             else:
                 for word in line:
-                    flag = word.find('@')
+                    flag = word.find('@') # wikitext
                     if flag != -1:
                         line.pop(line.index(word))
             datasets.append(line)
     return datasets
 
 
-'''def get_datasets_ptb(filename):
-    datasets = []
-    with open(filename, encoding='utf-8') as f:
-        for line in f:
-            line = line.strip('\n')
-            line = line.strip(' ').split(' ')
-            datasets.append(line)
-    return datasets'''
-
-
+# sequence length = mean length of sentence + standard deviation
 def seq_len(datasets):
     data = []
     for line in datasets:
@@ -73,6 +69,7 @@ def seq_len(datasets):
     return result
 
 
+# get vocabulary
 def get_train_vocab(dataset):
     vocab = set()
     for line in dataset:
@@ -81,6 +78,7 @@ def get_train_vocab(dataset):
     return vocab
 
 
+# glove vector in vocabulary
 def get_glove_vocab(filename):
     vocab = set()
     with open(filename, 'r', encoding='utf-8') as f:
@@ -90,6 +88,7 @@ def get_glove_vocab(filename):
     return vocab
 
 
+# word to index(dict)
 def word2index(train_words, glove_vocab):
     words = train_words & glove_vocab
     words = list(words)
@@ -107,6 +106,7 @@ def word2index(train_words, glove_vocab):
     return vocab
 
 
+# index to word (dict)
 def index2word(vocab):
     index = []
     vocab = sorted(vocab.items(), key=lambda x: x[1], reverse=False)
@@ -115,6 +115,7 @@ def index2word(vocab):
     return index
 
 
+# index to embedding(np)
 def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab):
     embeddings = dict()
     with open(filename_glove, 'r', encoding='utf-8') as f:
@@ -124,7 +125,7 @@ def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab):
             if word in vocab.keys():
                 embedding = [float(x) for x in line[1:]]
                 embeddings[vocab[word]] = embedding
-        for i in range(4):
+        for i in range(4): # Generating word vectors randomly(pad, bos, eos, unk)
             np.random.seed(i)
             embedding = truncnorm.rvs(-2, 2, size=dim_word)
             embeddings[i] = embedding
@@ -134,12 +135,14 @@ def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab):
         embeddings_array[i[0]] = i[1]
     np.savez_compressed(filename_trimmed_glove, embeddings=embeddings_array)
 
+
+# save the dict
 def write_vocab(filename, vocab):
     with open(filename, 'wb') as f:
         pickle.dump(vocab, f)
 
 
-# cut word
+# cut word(Punctuated sentences)
 def sentence2index(sentence, vocab, max_length):
     sentence = sentence.lower()
     words = nltk.word_tokenize(sentence)
@@ -147,6 +150,7 @@ def sentence2index(sentence, vocab, max_length):
     return result
 
 
+# sentence to index
 # with open('data/word2index.pkl', 'rb') as f:
 #     vocab = pickle.load(f)
 # eg.sentence = ['no', 'it', 'was', 'n't', 'black', 'monday']
@@ -165,6 +169,7 @@ def sent2index(sentence, vocab, max_length):
     return result
 
 
+# data to index(np)
 def get_trimmed_datasets(filename, datasets, vocab, max_length):
     embeddings = np.zeros([len(datasets), max_length])
     k = 0
@@ -175,6 +180,7 @@ def get_trimmed_datasets(filename, datasets, vocab, max_length):
     np.savez_compressed(filename, index=embeddings)
 
 
+# index to sentence
 # with open('data/index2word.pkl', 'rb') as f:
 #     vocab = pickle.load(f)
 def index2sentence(index, vocab):

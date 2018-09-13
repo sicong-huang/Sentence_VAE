@@ -1,4 +1,6 @@
+# Calculate average sentence length
 import matplotlib.pyplot as plt
+# sentence length(dict)
 '''length = dict()
 with open('data/train', encoding='utf-8') as f:
     for line in f:
@@ -8,7 +10,7 @@ with open('data/train', encoding='utf-8') as f:
             length[len(line)] = 1
         else:
             length[len(line)] += 1
-# 散点图
+# Scatter
 x_values = length.keys()
 y_values = length.values()
 plt.scatter(x_values, y_values, s=10)'''
@@ -25,7 +27,7 @@ data = sorted(data.items(), key=lambda x: x[0], reverse=False)
 y = []
 for i in data:
     y.append(i[1])
-# 柱状图
+# histogram
 plt.bar(range(len(y)), y)'''
 
 import numpy as np
