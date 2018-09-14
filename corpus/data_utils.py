@@ -38,7 +38,7 @@ def dim_check(filename, dim_word):
     return datasets'''
 
 
-# put data in list
+# Cut the data into sentences and put them in datasets(list)
 def get_datasets(filename, lowercase):
     datasets = []
     with open(filename, 'r', encoding='utf-8') as f:
@@ -69,7 +69,7 @@ def seq_len(datasets):
     return result
 
 
-# get vocabulary
+# Building vocabulary based on train data
 def get_train_vocab(dataset):
     vocab = set()
     for line in dataset:
@@ -79,6 +79,7 @@ def get_train_vocab(dataset):
 
 
 # glove vector in vocabulary
+# filename: glove.6B
 def get_glove_vocab(filename):
     vocab = set()
     with open(filename, 'r', encoding='utf-8') as f:
@@ -89,8 +90,8 @@ def get_glove_vocab(filename):
 
 
 # word to index(dict)
-def word2index(train_words, glove_vocab):
-    words = train_words & glove_vocab
+def word2index(train_vocab, glove_vocab):
+    words = train_vocab & glove_vocab
     words = list(words)
     vocab = dict()
     vocab['<pad>'] = 0
@@ -106,7 +107,7 @@ def word2index(train_words, glove_vocab):
     return vocab
 
 
-# index to word (dict)
+# index to word (list)
 def index2word(vocab):
     index = []
     vocab = sorted(vocab.items(), key=lambda x: x[1], reverse=False)
@@ -116,6 +117,7 @@ def index2word(vocab):
 
 
 # index to embedding(np)
+# save to filename_trimmed_glove
 def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab):
     embeddings = dict()
     with open(filename_glove, 'r', encoding='utf-8') as f:
@@ -136,7 +138,7 @@ def glove_embedding(filename_glove, filename_trimmed_glove, dim_word, vocab):
     np.savez_compressed(filename_trimmed_glove, embeddings=embeddings_array)
 
 
-# save the dict
+# save the dict to filename
 def write_vocab(filename, vocab):
     with open(filename, 'wb') as f:
         pickle.dump(vocab, f)
@@ -169,7 +171,8 @@ def sent2index(sentence, vocab, max_length):
     return result
 
 
-# data to index(np)
+# datasets to index(np)
+# save to filename
 def get_trimmed_datasets(filename, datasets, vocab, max_length):
     embeddings = np.zeros([len(datasets), max_length])
     k = 0

@@ -1,5 +1,9 @@
+'''
+1. Encoder the paragraph.
+2. Clustering(k-means, GMM) sentences and finding the core.
+3. Decoder the core.
+'''
 import nltk
-import numpy as np
 import keras
 import sys
 sys.path.append('../')
@@ -11,7 +15,6 @@ from sklearn.mixture import GaussianMixture
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 
 # encode a sentence string to latent representation
-####==== proprocess input sentences the same way =====####
 def encode(sentence, encoder, word2idx, seq_len):
     sequence = sentence2index(sentence, word2idx, seq_len)
     return encoder.predict(np.array([sequence]))
@@ -33,12 +36,8 @@ def decode(code, decoder, idx2word, seq_len, bos_idx, eos_idx, detok):
 
 
 def k_means(x, num):
-    kmeans = KMeans(n_clusters=num, random_state=0).fit(result)
+    kmeans = KMeans(n_clusters=num, random_state=0).fit(x)
     centers = kmeans.cluster_centers_
-    # print('label')
-    # print(kmeans.labels_)
-    # print('center')
-    # print(centers)
     return centers
 
 
@@ -48,11 +47,6 @@ def GMM(x, num):
     for i in range(num):
         for j in range(x.shape[1]):
             y[i][j] = gmmModel.means_[i][j]
-    # print('label')
-    # label = gmmModel.predict(x)
-    # print(label)
-    # print('center')
-    # print(y)
     return y
 
 
@@ -69,8 +63,12 @@ if __name__ == '__main__':
     # load word2idx and idx2word
     idx2word = utils.load_object('../data/index2word.pkl')
     word2idx = utils.load_object('../data/word2index.pkl')
+
+    # input paragraph
     f = open('text.txt', 'r', encoding='utf-8')
     text = f.read()
+
+    # Cut the text into sentences and put them in 'sentences'
     tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
     sentences = tokenizer.tokenize(text)
     print('text')

@@ -1,33 +1,27 @@
 class Config():
-    def __init__(self, load=True):
-        if load:
-            self.load()
-    def load(self):
-        pass
+    def __init__(self):
+        # word embedding dimension
+        self.dim_word = 300
 
+        # glove files
+        self.filename_glove = "embedding/glove.6B/glove.6B.{}d.txt".format(self.dim_word)
 
-    # word embedding dimension
-    dim_word = 300
+        # trimmed glove file
+        self.filename_trimmed_glove = 'data/trimmed_glove.npz'
 
-    # glove files
-    filename_glove = "embedding/glove.6B/glove.6B.{}d.txt".format(dim_word)
+        # dataset
+        self.filename_train = 'raw_data/ptb/train'
+        self.filename_valid = 'raw_data/ptb/valid'
+        self.filename_test = 'raw_data/ptb/test'
 
-    # trimmed glove file
-    filename_trimmed_glove = 'data/trimmed_glove.npz'
+        # trimmed data
+        self.filename_trimmed_train = 'data/train.npz'
+        self.filename_trimmed_valid = 'data/valid.npz'
+        self.filename_trimmed_test = 'data/test.npz'
 
-    # dataset
-    filename_train = 'raw_data/ptb/train'
-    filename_valid = 'raw_data/ptb/valid'
-    filename_test = 'raw_data/ptb/test'
+        # sequence length
+        self.max_length = 32
 
-    # trimmed data
-    filename_trimmed_train = 'data/train.npz'
-    filename_trimmed_valid = 'data/valid.npz'
-    filename_trimmed_test = 'data/test.npz'
-
-    # sequence length
-    max_length = 32
-
-    # vocab
-    filename_words = 'data/word2index.pkl'
-    filename_index = 'data/index2word.pkl'
+        # vocab
+        self.filename_words = 'data/word2index.pkl'
+        self.filename_index = 'data/index2word.pkl'

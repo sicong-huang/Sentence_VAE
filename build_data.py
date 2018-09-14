@@ -1,3 +1,9 @@
+'''
+Corpus preprocessing
+1. generate train/valid/test(np)
+2. generate word2index.pkl, index2word.pkl
+3. generate trimmed glove embedding(np)
+'''
 import argparse
 from corpus.config import Config
 from corpus.data_utils import file_check, dim_check, get_datasets, seq_len, get_train_vocab, get_glove_vocab, word2index, index2word, write_vocab,glove_embedding, get_trimmed_datasets
@@ -5,7 +11,7 @@ from corpus.data_utils import file_check, dim_check, get_datasets, seq_len, get_
 
 def main():
     # get config
-    config = Config(load=False)
+    config = Config()
 
     # input
     parser = argparse.ArgumentParser()
